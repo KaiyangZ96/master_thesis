@@ -2,7 +2,38 @@
 
 ##generate phyobj with phylum level
 phyobj_thinObese_phylum <- tax_glom(phyobj_thinObese,taxrank = rank_names(phyobj_thinObese)[2])
-
+##ANOVA test for some phylums
+phylum_info <- t(otu_table(phyobj_thinObese_phylum))
+colnames(phylum_info) <- phyobj_thinObese_phylum@tax_table[,'Phylum']
+phylum_info <-as.data.frame(phylum_info)
+phylum_info$Individuals <- rownames(phylum_info)
+thinObese_MetaData <- meta(phyobj_thinObese)
+phylum_info <- full_join(thinObese_MetaData, phylum_info)
+phylum_info$FB <- phylum_info$p__Firmicutes/phylum_info$p__Bacteroidetes
+aovFirmicutesTag = aov(p__Firmicutes ~ Tag, data=phylum_info)
+summary(aovFirmicutesTag)
+TukeyHSD(aovFirmicutesTag)
+aovBacteroidetesTag = aov(p__Bacteroidetes ~ Tag, data=phylum_info)
+summary(aovBacteroidetesTag)
+TukeyHSD(aovBacteroidetesTag)
+aovProteobacteriaTag = aov(p__Proteobacteria ~ Tag, data=phylum_info)
+summary(aovProteobacteriaTag)
+TukeyHSD(aovProteobacteriaTag)
+aovActinobacteriaTag = aov(p__Actinobacteria ~ Tag, data=phylum_info)
+summary(aovActinobacteriaTag)
+TukeyHSD(aovActinobacteriaTag)
+aovVerrucomicrobiaTag = aov(p__Verrucomicrobia ~ Tag, data=phylum_info)
+summary(aovVerrucomicrobiaTag)
+TukeyHSD(aovVerrucomicrobiaTag)
+aovFBTag = aov(FB ~ Tag, data=phylum_info)
+summary(aovFBTag)
+TukeyHSD(aovFBTag)
+##Phylum Proportion measurement
+Firmicutes_proportion=sum(phylum_info$p__Firmicutes)/sum(phyobj_thinObese_phylum@otu_table)
+Bacteroidetes_proportion=sum(phylum_info$p__Bacteroidetes)/sum(phyobj_thinObese_phylum@otu_table)
+Proteobacteria_proportion=sum(phylum_info$p__Proteobacteria)/sum(phyobj_thinObese_phylum@otu_table)
+Actinobacteria_proportion=sum(phylum_info$p__Actinobacteria)/sum(phyobj_thinObese_phylum@otu_table)
+Verrucomicrobia_proportion=sum(phylum_info$p__Verrucomicrobia)/sum(phyobj_thinObese_phylum@otu_table)
 ##Plot
 plot_bar(phyobj_thinObese_phylum, x="Tag", fill="Phylum") + geom_bar(aes(color=Phylum, fill=Phylum), stat="identity")
 library(reshape2)
